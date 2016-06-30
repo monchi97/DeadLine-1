@@ -19,9 +19,9 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
     }
     
     //表示させるやつ
-    let dataList = [["通知しない","1回","毎日","毎週"]]
+    let dataList = [["しない","毎日","毎週"]]
     //データをUILocalNotificationに渡す配列
-    let dataArray = [-1.0, 0.0, 86400.0, 604800.0]
+    let dataArray = [0.0, 86400.0, 604800.0]
     var selectedRow = 0
     
     var date: String!
@@ -96,7 +96,7 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
         saveData.setObject(listArray, forKey: "List")
         saveData.synchronize()
         
-        if selectedRow != 0 {
+        if selectedRow == 0 {
             //通知部分
             let notification = UILocalNotification()
             notification.fireDate = NSDate(timeIntervalSinceNow: span)
@@ -109,6 +109,14 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
         
         textField.text = ""
         
+        let date: NSDate = datePicker.date
+        let cal: NSCalendar = NSCalendar(identifier: NSCalendarIdentifierGregorian)!
+        let comp: NSDateComponents = cal.components(
+            [NSCalendarUnit.Weekday],
+            fromDate: date
+        )
+        let weekday: Int = comp.weekday
+        
         let sep1 = selectedDate.componentsSeparatedByString("/")
         let sep2 = sep1[2].componentsSeparatedByString(" ")
         let sep3 = sep2[1].componentsSeparatedByString(":")
@@ -119,19 +127,28 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
         let hour: Int = Int(sep3[0])!
         let min: Int = Int(sep3[1])!
         
-        let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
         cal.locale = NSLocale.currentLocale()
         let comps = NSDateComponents()
-        comps.year = year       // 年度は適当で良い
-        comps.weekOfMonth = 1   // 適当で良いが、1で良いだろう
-        comps.weekOfYear = 1    // これも1で良い
-        comps.weekday = 2       // ここは重要。日曜日が1で月曜日が2、あと曜日が進むごとに+1されていく
+        comps.year = year
+        comps.weekOfMonth = 1
+        comps.weekOfYear = 1
+        comps.weekday = weekday       // ここは重要。日曜日が1で月曜日が2、あと曜日が進むごとに+1されていく
         comps.hour = hour      // 通知したい時刻（時）
         comps.minute = min  // 通知したい時刻（分）
         // 指定曜日指定時刻のNSDateを得る
         let fireDate = cal.dateFromComponents(comps)!
         
+        if selectedRow == 2 {
+            let notification = UILocalNotification()
+            notification.fireDate = fireDate    // さっき作った指定曜日が入っているNSDate
+            notification.repeatInterval = NSCalendarUnit.WeekOfYear  // NSDateの曜日で毎週通知を示す
+            notification.alertBody = "⚠︎提出期限の迫った課題があります。"
+            notification.soundName = UILocalNotificationDefaultSoundName
         
+            let app = UIApplication.sharedApplication()
+            app.scheduleLocalNotification(notification)
+            
+        }
     }
     
     

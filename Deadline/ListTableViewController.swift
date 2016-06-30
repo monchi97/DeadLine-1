@@ -85,4 +85,5 @@ class ListTableViewController: UITableViewController {
         //テーブルの再読み込み
         tableView.reloadData()
     }
+
 }
