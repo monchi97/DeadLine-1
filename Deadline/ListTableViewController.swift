@@ -79,8 +79,18 @@ class ListTableViewController: UITableViewController {
             wordArray.removeAtIndex(indexPath.row)
             saveData.removeObjectForKey("List")
             saveData.setObject(wordArray, forKey: "List")
+            // アプリに登録されている通知を列挙する
+            for(UILocalNotification *notification in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
+                // キーで検索
+                if([[notification.userInfo objectForKey:"id"] integerValue] == 999) {
+                    　// キーが一致した場合、削除する
+                    [[UIApplication sharedApplication] cancelLocalNotification:notification];
+                }
+            }
 
         }
+        
+        
         
         //テーブルの再読み込み
         tableView.reloadData()
