@@ -97,6 +97,7 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
         saveData.synchronize()
         
         if selectedRow == 0 {
+            UIApplication.sharedApplication().cancelAllLocalNotifications();
             //通知部分
             let notification = UILocalNotification()
             notification.fireDate = NSDate(timeIntervalSinceNow: span)
@@ -107,7 +108,18 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
             UIApplication.sharedApplication().scheduleLocalNotification(notification)
         }
         
-        textField.text = ""
+        if selectedRow == 1 {
+            UIApplication.sharedApplication().cancelAllLocalNotifications();
+            //通知部分
+            let notification = UILocalNotification()
+            notification.fireDate = NSDate(timeIntervalSinceNow: span)
+            notification.timeZone = NSTimeZone.defaultTimeZone()
+            notification.alertBody = "⚠︎提出期限の迫った課題があります。"
+            notification.alertAction = "OK"
+            notification.soundName = UILocalNotificationDefaultSoundName
+            notification.repeatInterval = .Day
+            UIApplication.sharedApplication().scheduleLocalNotification(notification)
+        }
         
         let date: NSDate = datePicker.date
         let cal: NSCalendar = NSCalendar(identifier: NSCalendarIdentifierGregorian)!
@@ -121,34 +133,30 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
         let sep2 = sep1[2].componentsSeparatedByString(" ")
         let sep3 = sep2[1].componentsSeparatedByString(":")
         
-        let year: Int = Int(sep1[0])!
-        let month: Int = Int(sep1[1])!
-        let day: Int = Int(sep2[0])!
         let hour: Int = Int(sep3[0])!
         let min: Int = Int(sep3[1])!
         
-        cal.locale = NSLocale.currentLocale()
-        let comps = NSDateComponents()
-        comps.year = year
-        comps.weekOfMonth = 1
-        comps.weekOfYear = 1
-        comps.weekday = weekday       // ここは重要。日曜日が1で月曜日が2、あと曜日が進むごとに+1されていく
-        comps.hour = hour      // 通知したい時刻（時）
-        comps.minute = min  // 通知したい時刻（分）
-        // 指定曜日指定時刻のNSDateを得る
-        let fireDate = cal.dateFromComponents(comps)!
-        
         if selectedRow == 2 {
+            UIApplication.sharedApplication().cancelAllLocalNotifications();
+            cal.locale = NSLocale.currentLocale()
+            let comps = NSDateComponents()
+            comps.weekday = weekday       // ここは重要。日曜日が1で月曜日が2、あと曜日が進むごとに+1されていく
+            comps.hour = hour      // 通知したい時刻（時）
+            comps.minute = min  // 通知したい時刻（分）
+            let fireDate = cal.dateFromComponents(comps)! // 指定曜日指定時刻のNSDateを得る
             let notification = UILocalNotification()
             notification.fireDate = fireDate    // さっき作った指定曜日が入っているNSDate
             notification.repeatInterval = NSCalendarUnit.WeekOfYear  // NSDateの曜日で毎週通知を示す
             notification.alertBody = "⚠︎提出期限の迫った課題があります。"
             notification.soundName = UILocalNotificationDefaultSoundName
-        
             let app = UIApplication.sharedApplication()
             app.scheduleLocalNotification(notification)
             
         }
+        
+        textField.text = ""
+
+        
     }
     
     
