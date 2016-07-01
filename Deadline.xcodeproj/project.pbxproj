@@ -281,7 +281,7 @@
 				TargetAttributes = {
 					E5240A2F1D1D2C3600AAE5F9 = {
 						CreatedOnToolsVersion = 7.3.1;
-						DevelopmentTeam = 43SA38KKY4;
+						DevelopmentTeam = T9R82R3VNE;
 					};
 					E5240A431D1D2C3600AAE5F9 = {
 						CreatedOnToolsVersion = 7.3.1;
@@ -516,7 +516,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = Deadline/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "Kenta-Okuda.Deadline";
+				PRODUCT_BUNDLE_IDENTIFIER = Shimon.Deadline;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 			};
@@ -530,7 +530,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = Deadline/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "Kenta-Okuda.Deadline";
+				PRODUCT_BUNDLE_IDENTIFIER = Shimon.Deadline;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 			};
