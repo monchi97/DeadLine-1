@@ -12,6 +12,7 @@ class ListTableViewController: UITableViewController {
     
     var wordArray: [AnyObject] = []
     let saveData = NSUserDefaults.standardUserDefaults()
+    var availableNotificationIdArray: [Bool] = []
     
     @IBOutlet var viewTable: UITableView!
     
@@ -28,9 +29,10 @@ class ListTableViewController: UITableViewController {
         if saveData.arrayForKey("List") != nil {
             wordArray = saveData.arrayForKey("List")!
         }
+        if saveData.arrayForKey("NOTIFICATION") != nil {
+            availableNotificationIdArray = saveData.arrayForKey("NOTIFICATION") as! [Bool]
+        }
         tableView.reloadData()
-        
-        print(wordArray)
     }
 
     override func didReceiveMemoryWarning() {
@@ -76,17 +78,26 @@ class ListTableViewController: UITableViewController {
         
         //削除の場合、配列からデータを削除する。
         if( editingStyle == UITableViewCellEditingStyle.Delete) {
+            
+            // Cancell local notification.
+            let wordDictionary = wordArray[indexPath.row]
+            let uidtodelete = wordDictionary["uniqueNotificationId"] as? Int
+            let app:UIApplication = UIApplication.sharedApplication()
+            for i in app.scheduledLocalNotifications! {
+                let notification = i as UILocalNotification
+                let userInfoCurrent = notification.userInfo! as? [String:AnyObject]
+                let uid = userInfoCurrent!["notificationId"]! as? Int
+                if uid == uidtodelete {
+                    //Cancelling local notification
+                    app.cancelLocalNotification(notification)
+                    availableNotificationIdArray[uid!] = true
+                    break
+                }
+            }
+            saveData.setObject(availableNotificationIdArray, forKey: "NOTIFICATION")
             wordArray.removeAtIndex(indexPath.row)
             saveData.removeObjectForKey("List")
             saveData.setObject(wordArray, forKey: "List")
-            // アプリに登録されている通知を列挙する
-            for(UILocalNotification *notification in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
-                // キーで検索
-                if([[notification.userInfo objectForKey:"id"] integerValue] == 999) {
-                    　// キーが一致した場合、削除する
-                    [[UIApplication sharedApplication] cancelLocalNotification:notification];
-                }
-            }
 
         }
         

@@ -25,15 +25,14 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
     var selectedRow = 0
     
     var date: String!
-    var saveDate = NSUserDefaults.standardUserDefaults()
-    var listArray = [AnyObject]()
+    //var saveDate = NSUserDefaults.standardUserDefaults()
     var pickerData: String = ""
     
     var wordArray: [AnyObject] = []
     let saveData = NSUserDefaults.standardUserDefaults()
     
     var availableNotificationIdArray: [Bool] = [true, true, true, true, true, true, true, true, true, true]
-    var notificationId: Int
+    var notificationId: Int = 0
 
     
     @IBAction func changeDate(sender: UIDatePicker) {
@@ -53,6 +52,13 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
         textField.placeholder = "課題名を入力してください"
         textField.clearButtonMode = UITextFieldViewMode.WhileEditing
         
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        if saveData.arrayForKey("List") != nil {
+            wordArray = saveData.arrayForKey("List")!
+        }
     }
     
     @IBAction func saveButton(){
@@ -95,17 +101,20 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
         )
         self.presentViewController(alert, animated: true, completion: nil)
         
-        let listDictionary = ["date": selectedDate, "repeat": pickerData, "name": name!]
-        listArray.append(listDictionary)
-        saveData.setObject(listArray, forKey: "List")
-        saveData.synchronize()
         
         for i in 0..<availableNotificationIdArray.count {
             if availableNotificationIdArray[i] {
                 notificationId = i
                 availableNotificationIdArray[i] = false
+                break
             }
         }
+        saveData.setObject(availableNotificationIdArray, forKey: "NOTIFICATION")
+        
+        let listDictionary = ["date": selectedDate, "repeat": pickerData, "name": name!, "uniqueNotificationId": notificationId]
+        wordArray.append(listDictionary)
+        saveData.setObject(wordArray, forKey: "List")
+        saveData.synchronize()
         
         if selectedRow == 0 {
             //通知部分
@@ -147,40 +156,6 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
             notification.userInfo = ["notificationId": notificationId];
             UIApplication.sharedApplication().scheduleLocalNotification(notification)
         }
-
-        
-//        let date: NSDate = datePicker.date
-//        let cal: NSCalendar = NSCalendar(identifier: NSCalendarIdentifierGregorian)!
-//        let comp: NSDateComponents = cal.components(
-//            [NSCalendarUnit.Weekday],
-//            fromDate: date
-//        )
-//        let weekday: Int = comp.weekday
-//        
-//        let sep1 = selectedDate.componentsSeparatedByString("/")
-//        let sep2 = sep1[2].componentsSeparatedByString(" ")
-//        let sep3 = sep2[1].componentsSeparatedByString(":")
-//        
-//        let hour: Int = Int(sep3[0])!
-//        let min: Int = Int(sep3[1])!
-//        
-//        if selectedRow == 2 {
-//            UIApplication.sharedApplication().cancelAllLocalNotifications();
-//            cal.locale = NSLocale.currentLocale()
-//            let comps = NSDateComponents()
-//            comps.weekday = weekday       // ここは重要。日曜日が1で月曜日が2、あと曜日が進むごとに+1されていく
-//            comps.hour = hour      // 通知したい時刻（時）
-//            comps.minute = min  // 通知したい時刻（分）
-//            let fireDate = cal.dateFromComponents(comps)! // 指定曜日指定時刻のNSDateを得る
-//            let notification = UILocalNotification()
-//            notification.fireDate = fireDate    // さっき作った指定曜日が入っているNSDate
-//            notification.repeatInterval = NSCalendarUnit.WeekOfYear  // NSDateの曜日で毎週通知を示す
-//            notification.alertBody = "⚠︎提出期限の迫った課題があります。"
-//            notification.soundName = UILocalNotificationDefaultSoundName
-//            let app = UIApplication.sharedApplication()
-//            app.scheduleLocalNotification(notification)
-//            
-//        }
         
         textField.text = ""
 
